@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(ggplot2)
 library(tidyverse)
+library(ggpubr)
 happy <- readxl::read_xls('/Users/ryanherren/Downloads/GSS.xls')
 ```
 ```{r}
@@ -37,6 +38,7 @@ happy <- rename(happy, 'ballot' = 'Ballot used for interview')
 ```{r}
 happy
 unique(happy$marital)
+unique(happy$happiness)
 ```
 
 ## Question 1: Find the average years of education for the respondents with each marital status. Arrange your output in a meaningful order and print. Describe any patterns you find.
@@ -51,14 +53,60 @@ happy %>%
 By looking at the results, it is hard to draw any conclusions. Statistically, the lower your education, the more likely you are to be widowed, which isn't exactly scientific. Divorced, married, and never married are all about the same in terms of average education.
 
 ## Question 2: Create a single data frame containing records for the better educated respondents with each marital status. A “better educated” respondent is someone who has strictly more years of education than the average among those with the same marital status. Print the structure of the data frame.
+```{r, warning=FALSE}
+smart_divorced <- select(filter(filter(happy, marital == "Divorced"), as.numeric(education) > 13.1), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+smart_married <- select(filter(filter(happy, marital == "Married"), as.numeric(education) > 13.0), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+smart_never_married <- select(filter(filter(happy, marital == "Never married"), as.numeric(education) > 13.4), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+smart_separated <- select(filter(filter(happy, marital == "Separated"), as.numeric(education) > 11.9), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+smart_widowed <- select(filter(filter(happy, marital == "Widowed"), as.numeric(education) > 11.1), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+educated <- rbind(smart_divorced, smart_married, smart_never_married, smart_separated, smart_widowed)
+str(educated)
+```
+
 
 For each of the investigation below, create at least one numerical summary and one appropriate visualization. Write a paragraph to describe your findings and the variables you used.
 
 ## Question 3: How is the happiness of a respondent related to his/her marriage status? Define that a person is happy if the response to question is “Very happy” or “Pretty happy”.
+```{r}
+divorced = select(filter(happy, marital == "Divorced"), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+married = select(filter(happy, marital == "Married"), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+never_married = select(filter(happy, marital == "Never married"), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+separated = select(filter(happy, marital == "Separated"), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+widowed = select(filter(happy, marital == "Widowed"), happiness, year, belief, party, income, sex, education, num_children, marital, work, id, ballot)
+
+# divorced %>%
+#   summarise(
+#     divorced_count = n(),
+#   )
+# divorced_happy <- filter(divorced, happiness == "Very happy" | happiness == "Pretty happy")
+# divorced_happy %>%
+#   summarise(
+#     hd_count = n()
+#   )
+
+div <- ggplot(divorced, aes(x=happiness)) + geom_bar(fill='red') + coord_flip() + ggtitle("Divorced")
+mar <- ggplot(married, aes(x=happiness)) + geom_bar(fill='green') + coord_flip() + ggtitle("Married")
+nev <- ggplot(never_married, aes(x=happiness)) + geom_bar(fill='yellow') + coord_flip() + ggtitle("Never Married")
+sep <- ggplot(separated, aes(x=happiness)) + geom_bar(fill='blue') + coord_flip() + ggtitle("Separated")
+wid <- ggplot(widowed, aes(x=happiness)) + geom_bar(fill='black') + coord_flip() + ggtitle("Widowed")
+figure <- ggarrange(div, mar, nev, sep, wid)
+figure
+```
+  
+    
+Based off of the proportions of the charts, married people are most likely to be very happy. Separated people have the highest proportion of not too happy people.
 
 ## Question 4: Does party affiliation affect the relationship you found in the last question?
 
 ## Question 5: How is marital status related to the education of a respondent? What are possible reasons accounting for the patterns you see?
 
-## Question 6: Explore two more interesting questions, and answer those questions using the GSS data.
+## Question 6: Explore two more interesting questions, and answer those questions using the GSS data. 
+## #1 I am going to explore is if income has any effect on how happy someone is.
+```{r}
+cleaned_happy <- subset(happy, happiness!="No answer" & happiness != "Don't know" & happiness != "Data collection: General Social Survey\nCase Selection: all cases" & income != "No answer" & income != "Not applicable" & income != "Refused" & income != "Don't know" & happiness != 'Not applicable')
+p <- ggplot(cleaned_happy, aes(fill = happiness, x = income)) + geom_bar(position='fill') + scale_y_continuous(labels = scales::percent) + scale_x_discrete(limits = c("Lt $1000","$1000 to 2999", '$3000 to 3999', '$4000 to 4999', '$5000 to 5999', '$6000 to 6999', '$7000 to 7999', '$8000 to 9999', '$10000 - 14999', '$15000 - 19999', '$20000 - 24999', '$25000 or more'))
+p + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + ggtitle("Proportion of happiness rating by income") + ylab("proportion")
+```
+
+Based off of the stacked bar chart, it is obvious that you are more likely to be more happy as your income increases. For the most part, the proportion of people who are pretty happy stays the same, but people switch from not too happy to very happy
 
