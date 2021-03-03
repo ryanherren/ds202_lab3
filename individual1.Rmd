@@ -1,0 +1,64 @@
+---
+title: "individual1"
+author: "Ryan Herren"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+happy <- readxl::read_xls('/Users/ryanherren/Downloads/GSS.xls')
+```
+```{r}
+happy
+```
+
+
+Use ggplot2 to create the plots, and dplyr to manipulate the data frame as much as possible. You may want to rename the columns of the data frame for your convenience using rename in dplyr.
+```{r}
+happy <- rename(happy, 'happiness' = 'General happiness')
+happy <- rename(happy, 'year' = 'Gss year for this respondent')
+happy <- rename(happy, 'belief' = 'Belief in life after death')
+happy <- rename(happy, 'party' = 'Political party affiliation')
+happy <- rename(happy, 'income' = 'Total family income')
+happy <- rename(happy, 'sex' = 'Respondents sex')
+happy <- rename(happy, 'education' = 'Highest year of school completed')
+happy <- rename(happy, 'num_children' = 'Number of children')
+happy <- rename(happy, 'marital' = 'Marital status')
+happy <- rename(happy, 'work' = 'Number of hours usually work a week')
+happy <- rename(happy, 'id' = 'Respondent id number')
+happy <- rename(happy, 'ballot' = 'Ballot used for interview')
+```
+
+```{r}
+happy
+unique(happy$marital)
+```
+
+## Question 1: Find the average years of education for the respondents with each marital status. Arrange your output in a meaningful order and print. Describe any patterns you find.
+```{r, warning=FALSE}
+happy %>% 
+  group_by(marital) %>%
+    summarise(
+        count = n(),
+        mean_education = mean(as.numeric(education), na.rm = T),
+    )
+```
+By looking at the results, it is hard to draw any conclusions. Statistically, the lower your education, the more likely you are to be widowed, which isn't exactly scientific. Divorced, married, and never married are all about the same in terms of average education.
+
+## Question 2: Create a single data frame containing records for the better educated respondents with each marital status. A “better educated” respondent is someone who has strictly more years of education than the average among those with the same marital status. Print the structure of the data frame.
+
+For each of the investigation below, create at least one numerical summary and one appropriate visualization. Write a paragraph to describe your findings and the variables you used.
+
+## Question 3: How is the happiness of a respondent related to his/her marriage status? Define that a person is happy if the response to question is “Very happy” or “Pretty happy”.
+
+## Question 4: Does party affiliation affect the relationship you found in the last question?
+
+## Question 5: How is marital status related to the education of a respondent? What are possible reasons accounting for the patterns you see?
+
+## Question 6: Explore two more interesting questions, and answer those questions using the GSS data.
+
