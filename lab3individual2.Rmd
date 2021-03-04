@@ -1,0 +1,90 @@
+---
+title: "individual2"
+author: "Carter Meseck"
+date: "3/3/2021"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+data <- readxl::read_xls('C:/Users/kungf/OneDrive/Desktop/GSS.xls')
+
+```
+```{r}
+### Problem 3, how is happiness related to marriage status?
+
+data$happy <- ifelse(data$`General happiness`== 'Pretty happy' | data$`General happiness` == 'Very happy', 'yes', 'no')
+
+ggplot(aes(x=happy), data=data) + geom_bar(fill="steelblue") + facet_wrap(~ `Marital status`) + ggtitle("How is happiness related to marriage status?")
+
+sep <- data[data$`Marital status` == 'Separated',]
+table(sep$happy)
+
+widowed <- data[data$`Marital status` == 'Widowed',]
+table(widowed$happy)
+
+table(data$happy, data$`Marital status`)
+
+# After looking at graphs and numerical summaries for happiness based on each marital status from the data, I can definitely say that your happiness is dependent on your marital status. It seems that people who are married or never married have a significantly higher difference between the people who are happy vs nonhappy. People who were divorced, separated, or widowed are significantly less happy, with people that separated being the most unhappy.
+
+```
+```{r}
+# Q4 - does party affiliation affect Q3
+
+# Too many variables too properly visualize facet_grid, so going to use most strong ones.
+q4 <- data[data$`Political party affiliation` %in% c('Independent','Strong democrat', 'Strong republican'),]
+
+ggplot(aes(x=happy), data=q4) + geom_bar(fill="steelblue") + facet_grid(`Marital status` ~ `Political party affiliation`) + ggtitle("Do political views affect happiness in marital status?")
+
+table(q4$`Political party affiliation`, q4$happy)
+table(q4$`Marital status`, q4$`Political party affiliation`)
+
+# After looking at the graph and numerical summaries, there appears to be a little difference for a couple Marital Statuses. People that are a strong republican and divorced and/or never married aren't as happy as the average of all people in this sample.
+
+```
+```{r}
+# Q5
+table(data$`Highest year of school completed`)
+
+data <- filter(data, !`Highest year of school completed` %in% c('No answer',"Don't know","Data collection: General Social Survey\nCase Selection: all cases"))
+table(data$`Highest year of school completed`)
+
+data <- data %>% mutate(`Highest year of school completed` = as.numeric(`Highest year of school completed`))
+
+
+
+apart <- data[data$`Marital status` %in% c('Divorced','Widowed','Separated','Never married'),]
+
+together <- data[data$`Marital status` %in% c('Married'),]
+
+together %>% arrange((`Highest year of school completed`))
+           
+ggplot(aes(x=`Highest year of school completed`), data=apart) + geom_bar(fill="steelblue") + facet_wrap(~ `Marital status`, scales = "free_y") + ggtitle("Highest school year completed for people that are apart")
+
+ggplot(aes(x=`Highest year of school completed`), data=together) + geom_bar(fill="steelblue") + facet_wrap(~ `Marital status`, scales = "free_y") + ggtitle("Highest school year completed for Married people")
+
+
+summary(together$`Highest year of school completed`)
+summary(apart$`Highest year of school completed`)
+
+#After looking at the distribution from the graphs and reading the numerical summary, the distribution appears to be similar for all Marital Statuses. What I also found interesting was that besides 12 being the max for all of them, 16 was the next hump in data because it would be a bachelors degree. What I found worthwhile, was people who were never married had a very big proportion of people who achieved year 12 and year 16, meaning they had the biggest "hump" compared to the rest as year 16 for Never married is over 1/2 the count for year 12.
+
+
+```
+
+```{r}
+#Q6 - I am going to be exploring if sex affects how happy you are depending on marital status. e.g are single/married males happier than females, etc.
+data <- filter(data, !`Respondents sex` %in% c(NA))
+data <- filter(data, !`Marital status` %in% c(NA, "No answer"))
+
+ggplot(aes(x=happy), data=data) + geom_bar(fill="steelblue") + facet_grid(`Marital status` ~ `Respondents sex`) + ggtitle("Does sex affect happiness from marital status?")
+
+summary(data$happy)
+table(data$happy, data$`Marital status`)
+table(data$happy, data$`Respondents sex`)
+table(data$`Marital status`, data$`Respondents sex`)
+
+# After looking at the graphs and numerical summaries, sex doesn't appear to make a difference in if someone is more likely to be happy with their marital status.
+```
+
