@@ -50,7 +50,7 @@ happy %>%
         mean_education = mean(as.numeric(education), na.rm = T),
     )
 ```
-By looking at the results, it is hard to draw any conclusions. Statistically, the lower your education, the more likely you are to be widowed, which isn't exactly scientific. Divorced, married, and never married are all about the same in terms of average education.
+By looking at the results, it is hard to draw any conclusions. Statistically, the lower your education, the more likely you are to be widowed, which isn't exactly scientific. Divorced, married, and never married are all about the same in terms of average education. There is not significant evidence that education can predict marital status.
 
 ## Question 2: Create a single data frame containing records for the better educated respondents with each marital status. A “better educated” respondent is someone who has strictly more years of education than the average among those with the same marital status. Print the structure of the data frame.
 ```{r, warning=FALSE}
