@@ -26,7 +26,7 @@ table(widowed$happy)
 
 table(data$happy, data$`Marital status`)
 
-# After looking at graphs and numerical summaries for happiness based on each marital status from the data, I can definitely say that your happiness is dependent on your marital status. It seems that people who are married or never married have a significantly higher difference between the people who are happy vs nonhappy. People who were divorced, separated, or widowed are significantly less happy, with people that separated being the most unhappy.
+# After looking at graphs and numerical summaries for happiness based on each marital status from the data, I can definitely say that your happiness is dependent on your marital status. It seems that people who are married or never married have a significantly higher difference between the people who are happy vs non happy. People who were divorced, separated, or widowed are significantly less happy, and people that have been separated are the most unhappy.
 
 ```
 ```{r}
